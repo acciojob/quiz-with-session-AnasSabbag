@@ -1,5 +1,5 @@
 //your JS code here.
-
+let userAnswers= JSON.parse(sessionStorage.getItem("progress"))||[];
 // Do not change code below this line
 // This code will just display the questions to the screen
 const questions = [
@@ -32,6 +32,8 @@ const questions = [
 
 // Display the quiz questions and choices
 function renderQuestions() {
+	const questionsElement= document.getElementById("questions");
+	questionsElement.innerHTML="";
   for (let i = 0; i < questions.length; i++) {
     const question = questions[i];
     const questionElement = document.createElement("div");
@@ -46,6 +48,10 @@ function renderQuestions() {
       if (userAnswers[i] === choice) {
         choiceElement.setAttribute("checked", true);
       }
+	  choiceElement.addEventListener("change",()=>{
+		  userAnswers[i]=choice;
+		  sessionStorage.setItem("progress",JSON.stringify(userAnswers));
+	  })
       const choiceText = document.createTextNode(choice);
       questionElement.appendChild(choiceElement);
       questionElement.appendChild(choiceText);
@@ -53,4 +59,21 @@ function renderQuestions() {
     questionsElement.appendChild(questionElement);
   }
 }
+
 renderQuestions();
+
+function calculateScore() {
+	let score=0;
+	for(let i=0;i<questions.length;i++){
+		if(userAnswers[i]===questions[i].answer){
+			score++;
+		}
+	}
+	document.getElementById("score").innerText=`Your score is ${score} out of 5.`
+	localStorage.setItem("score",score);
+}
+document.getElementById("submit").addEventListener("click",calculateScore)
+const savedScore = localStorage.getItem("score");
+if(savedScore!==null){
+	document.getElementById("score").innerText=`Your score is ${savedScore} out of 5.`
+}
